@@ -1,24 +1,47 @@
-import logo from './logo.svg';
+import {useEffect, useState} from "react";
+import Movie from './components/Movie';
+import Search from './components/Search';
+import loading from './img/loading.svg';
 import './App.css';
 
+const apiKey = '77a0512f9495da527410f535f981500e'
+
+
+
 function App() {
+  const [data, setData] = useState([]);
+
+  useEffect(() => {
+    fetchMovieData();
+  }, []);
+
+  const fetchMovieData = async () => {
+    const res = await fetch(
+      `https://api.themoviedb.org/3/discover/movie?sort_by=popularity.desc&api_key=${apiKey}&page=1`
+    );
+    const data = await res.json();
+    setData(data.results);
+  };
+
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
+    <>
+      <header>
+        <h1>
+          <a className="text" href="/">Movie App</a>
+        </h1>
+        <Search setData={setData} />
       </header>
-    </div>
+      <main>
+        {data?.length > 0 ? (
+          data.map((movie) => <Movie key={movie.id} movie={movie} />)
+        ) : (
+          <div>
+            <img src={loading} alt="Loading..." />
+          </div>
+        )}
+      </main>
+    </>
   );
 }
 
